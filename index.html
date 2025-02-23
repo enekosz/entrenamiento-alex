@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrenamiento de Alex</title>
+    <meta name="description" content="Programa de entrenamiento diario con ejercicios de cuerpo completo.">
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #f4f4f4;
+            background: linear-gradient(120deg, #f4f4f4, #dcdcdc);
             margin: 0;
             padding: 0;
         }
@@ -36,6 +37,24 @@
             color: white;
             border-radius: 5px;
             cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .indicators {
+            margin-top: 10px;
+        }
+        .dot {
+            height: 10px;
+            width: 10px;
+            margin: 5px;
+            background-color: #bbb;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot.active {
+            background-color: #007bff;
         }
     </style>
 </head>
@@ -77,27 +96,56 @@
             <p>🔥 Final: 1 min de sentadillas rápidas + 30 seg de plancha.</p>
         </div>
     </div>
-    <button onclick="prevSlide()">Anterior</button>
-    <button onclick="nextSlide()">Siguiente</button>
+    <button onclick="prevSlide()" aria-label="Anterior">Anterior</button>
+    <button onclick="nextSlide()" aria-label="Siguiente">Siguiente</button>
+    <div class="indicators"></div>
     
     <script>
-        let index = 0;
-        const slides = document.querySelectorAll('.slide');
-        
-        function showSlide(n) {
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[n].classList.add('active');
-        }
-        
-        function prevSlide() {
-            index = (index === 0) ? slides.length - 1 : index - 1;
-            showSlide(index);
-        }
-        
-        function nextSlide() {
-            index = (index === slides.length - 1) ? 0 : index + 1;
-            showSlide(index);
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            let index = 0;
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.querySelector('.indicators');
+
+            // Crear indicadores
+            slides.forEach((_, i) => {
+                let dot = document.createElement("span");
+                dot.classList.add("dot");
+                if (i === 0) dot.classList.add("active");
+                dot.dataset.index = i;
+                dot.addEventListener("click", () => {
+                    index = parseInt(dot.dataset.index);
+                    updateSlides();
+                });
+                indicators.appendChild(dot);
+            });
+
+            function updateSlides() {
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+
+                document.querySelectorAll(".dot").forEach(dot => dot.classList.remove("active"));
+                document.querySelectorAll(".dot")[index].classList.add("active");
+            }
+
+            function prevSlide() {
+                index = (index === 0) ? slides.length - 1 : index - 1;
+                updateSlides();
+            }
+
+            function nextSlide() {
+                index = (index === slides.length - 1) ? 0 : index + 1;
+                updateSlides();
+            }
+
+            // Navegación con teclado
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowRight") nextSlide();
+                if (e.key === "ArrowLeft") prevSlide();
+            });
+
+            window.prevSlide = prevSlide;
+            window.nextSlide = nextSlide;
+        });
     </script>
 </body>
 </html>
